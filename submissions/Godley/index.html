@@ -1,7 +1,13 @@
 <html>
 <head>
 <title>Project 0</title>
-<style type="text/css" href="project0.css"></style>
+<style type="text/css" href="project0.css">
+	.line {
+		fill: none;
+		stroke: steelblue;
+		stroke-width: 2px;
+	}
+</style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <!--Put your D3 import statement between these two lines-->
     <script src="https://d3js.org/d3.v4.js" charset="utf-8"></script>
@@ -36,30 +42,30 @@
         // Put your part one code here ***********************
 
 		// Get the data
-		dataI = d3.csv("data/anscombe_I.csv", function(error, dataI) {
+		d3.csv("data/anscombe_I.csv", function(error, dataI) {
 			if (error) throw error;
 			console.log("Dataset anscombe_I.csv loaded");
 			console.log(dataI);
 			checkDataset(dataI);
 		});
 		// Get the data
-		dataII = d3.csv("data/anscombe_II.csv", function(error, dataII) {
+		d3.csv("data/anscombe_II.csv", function(error, dataII) {
 			if (error) throw error;
-			console.log("Dataset anscombe_I.csv loaded");
+			console.log("Dataset anscombe_II.csv loaded");
 			console.log(dataII);
 			checkDataset(dataII);
 		});
 		// Get the data
-		dataIII = d3.csv("data/anscombe_III.csv", function(error, dataIII) {
+		d3.csv("data/anscombe_III.csv", function(error, dataIII) {
 			if (error) throw error;
-			console.log("Dataset anscombe_I.csv loaded");
+			console.log("Dataset anscombe_III.csv loaded");	
 			console.log(dataIII);
 			checkDataset(dataIII);
 		});
 		// Get the data
 		d3.csv("data/anscombe_IV.csv", function(error, dataIV) {
 			if (error) throw error;
-			console.log("Dataset anscombe_I.csv loaded");	
+			console.log("Dataset anscombe_IV.csv loaded");	
 			console.log(dataIV);
 			checkDataset(dataIV);
 		});
@@ -76,40 +82,127 @@
 			}
         }
         
-        // Put your part two code here ***********************
-		var w = 700; // Width of our visualization
-		var h = 500; // Height of our visualization
-		var xOffset = 40; // Space for x-axis labels
-		var yOffset = 100; // Space for y-axis labels
-		var margin = 10; // Margin around visualization
-		var xVal = "X"; // Value to plot on x-axis
-		var yVal = "Y"; // Value to plot on y-axis
 
-		// set the dimensions and margins of the graph
-		var margin = {top: 20, right: 20, bottom: 30, left: 50};
-		var width = 960 - margin.left - margin.right;
-		var height = 500 - margin.top - margin.bottom;
+		// Put your part two code here ***********************
+		d3.csv("data/anscombe_II.csv", function(error, dataII) {
+			if (error) throw error;
+			console.log("Dataset anscombe_II.csv loaded");
+			console.log(dataII);
+			dataII.forEach(function(d) {
+				d.x = parseInt(d.x);
+			});
 
-		// set the ranges
-		var x = d3.scaleLinear().range([0, width])
-		var y = d3.scaleLinear().range([height, 0]);
+			var w = 700; // Width of our visualization
+			var h = 500; // Height of our visualization
+			var xOffset = 40; // Space for x-axis labels
+			var yOffset = 100; // Space for y-axis labels
+			var margin = 10; // Margin around visualization
+			var vals = ['x', 'y']; // List of data attributes
+			var xVal = vals[0]; // Value to plot on x-axis
+			var yVal = vals[1]; // Value to plot on y-axis
 
-		var svgI = d3.select("body").append("svg")
-					.attr("id", "svgI")
-					.attr("width", width + margin.left + margin.right)
-					.attr("height", height + margin.top + margin.bottom);
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 50};
+			var width = 960 - margin.left - margin.right;
+			var height = 500 - margin.top - margin.bottom;
 
-		svgI.selectAll("circle")
-			.data(dataI)
-			.enter()
-			.append("circle")
-			.attr("r", 5) // adds radius to circle
-			.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
-			.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
-			.attr("fill", "lightblue");
+			// set the ranges
+			var x = d3.scaleLinear().range([0, width])
+					.domain(d3.extent(dataII, function(d) {return d.x;}));
+			var y = d3.scaleLinear().range([height, 0])
+					.domain([0, d3.max(dataII, function(d) {return d.y;})]);
 
+			var svgII = d3.select("div[id='barchart']")
+						.append("svg")
+							.attr("id", "svgII")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			svgII.selectAll("circle")
+				.data(dataII)
+				.enter()
+				.append("circle")
+				.attr("r", 5) // adds radius to circle
+				.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
+				.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
+				.attr("fill", "lightblue");
+
+			var valueline = d3.line()
+				.x(function(d) { return x(d.x); })
+				.y(function(d) { return y(d.y); });
+
+			svgII.append("path")
+				.data([dataII])
+				.attr("class", "line")
+				.attr("d", valueline(dataII));
+
+			// Add the X Axis
+			svgII.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add the Y Axis
+			svgII.append("g")
+				.call(d3.axisLeft(y));
+		});
         
         // Put your part three & four code here ***********************
+		d3.csv("data/anscombe_II.csv", function(error, dataII) {
+			if (error) throw error;
+			console.log("Dataset anscombe_II.csv loaded");
+			console.log(dataII);
+			dataII.forEach(function(d) {
+				d.x = parseInt(d.x);
+			});
+
+			var w = 700; // Width of our visualization
+			var h = 500; // Height of our visualization
+			var xOffset = 40; // Space for x-axis labels
+			var yOffset = 100; // Space for y-axis labels
+			var margin = 10; // Margin around visualization
+			var vals = ['x', 'y']; // List of data attributes
+			var xVal = vals[0]; // Value to plot on x-axis
+			var yVal = vals[1]; // Value to plot on y-axis
+
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 50};
+			var width = 960 - margin.left - margin.right;
+			var height = 500 - margin.top - margin.bottom;
+
+			// set the ranges
+			var x = d3.scaleLinear().range([0, width])
+					.domain(d3.extent(dataII, function(d) {return d.x;}));
+			var y = d3.scaleLinear().range([height, 0])
+					.domain([0, d3.max(dataII, function(d) {return d.y;})]);
+
+			var svgIII = d3.select("div[id='scatterplot']")
+						.append("svg")
+							.attr("id", "svgIII")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			svgIII.selectAll("circle")
+				.data(dataII)
+				.enter()
+				.append("circle")
+				.attr("r", 5) // adds radius to circle
+				.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
+				.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
+				.attr("fill", "lightblue");
+
+			// Add the X Axis
+			svgIII.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add the Y Axis
+			svgIII.append("g")
+				.call(d3.axisLeft(y));
+		});
         
         // Put your part five code here ***********************
         
