@@ -35,6 +35,10 @@
     <div id="partFive">
         <h1>Part Five: </h1>
         <div id="scatterplotSet">
+			<div id="scatI"></div>
+			<div id="scatII"></div>
+			<div id="scatIII"></div>
+			<div id="scatIV"></div>
         </div>
 	</div>
     
@@ -121,7 +125,7 @@
 						.append("g")
 							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-			svgII.selectAll("bar")
+			/*svgII.selectAll("bar")
 				.data(dataII)
 				.enter().append("rect")
 					.attr("class", "bar")
@@ -129,7 +133,46 @@
 					.attr("width", 50)
 					.attr("fill", "lightblue")
 					.attr("y", function(d) { return y(d.y); })
-					.attr("height", function(d) { return height - y(d.y); });
+					.attr("height", function(d) { return height - y(d.y); });*/
+
+			function click(x, y) {
+				//d3.select("p[id='scatterLabel']")
+				//document.getElementsByTagName("scatterLabel")[0].innerHTML="X: " + x + ", Y: " + y;
+				$("p[id='scatterLabel']").html("(" + x + ", " + y + ")");
+			}
+
+			function mouseOn(d, i) {
+				d3.select(this).style({
+					fill: "orange",
+					r: 10
+				});
+			}
+			function mouseOff(d, i) {
+				d3.select(this).style({
+					fill: "lightblue",
+					r: 5
+				});
+			}
+
+			svgII.selectAll("circle")
+				.data(dataII)
+				.enter()
+				.append("circle")
+				.attr("r", 5) // adds radius to circle
+				.attr("fill", "lightblue")
+				.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
+				.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
+				.on("click", function(d) { click(d.x, d.y) })
+				.on("mouseover", function(d) { 
+					d3.select(this)
+						.style("fill", "orange")
+						.style("r", 10);
+				})
+				.on("mouseout", function(d) { 
+					d3.select(this)
+						.style("fill", "lightblue")
+						.style("r", 5);
+				});
 
 			// Add the X Axis
 			svgII.append("g")
@@ -189,7 +232,7 @@
 				.attr("class", "line")
 				.attr("d", valueline(dataII));
 
-			function click(x, y) {
+			/*function click(x, y) {
 				//d3.select("p[id='scatterLabel']")
 				//document.getElementsByTagName("scatterLabel")[0].innerHTML="X: " + x + ", Y: " + y;
 				$("p[id='scatterLabel']").html("(" + x + ", " + y + ")");
@@ -226,7 +269,7 @@
 					d3.select(this)
 						.style("fill", "lightblue")
 						.style("r", 5);
-				});
+				});*/
 
 			// Add the X Axis
 			svgIII.append("g")
@@ -239,6 +282,235 @@
 		});
         
         // Put your part five code here ***********************
+		// First
+		d3.csv("data/anscombe_I.csv", function(error, dataI) {
+			if (error) throw error;
+			console.log("Dataset anscombe_I.csv loaded");
+			console.log(dataI);
+			dataI.forEach(function(d) {
+				d.x = parseInt(d.x);
+			});
+
+			var w = 400; // Width of our visualization
+			var h = 400; // Height of our visualization
+			var xOffset = 40; // Space for x-axis labels
+			var yOffset = 100; // Space for y-axis labels
+			var margin = 10; // Margin around visualization
+			var vals = ['x', 'y']; // List of data attributes
+			var xVal = vals[0]; // Value to plot on x-axis
+			var yVal = vals[1]; // Value to plot on y-axis
+
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 50};
+			var width = 200;
+			var height = 200;
+
+			// set the ranges
+			var x = d3.scaleLinear().range([0, width])
+					.domain([d3.min(dataI, function(d) {return d.x;}), 
+							d3.max(dataI, function(d) {return d.x;}) + 1]);
+			var y = d3.scaleLinear().range([height, 0])
+					.domain([0, 1 + d3.max(dataI, function(d) {return d.y;})]);
+
+			var svgV_I = d3.select("div[id='scatI']")
+						.append("svg")
+							.attr("id", "svgV_I")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			svgV_I.selectAll("circle")
+				.data(dataI)
+				.enter()
+				.append("circle")
+				.attr("r", 5) // adds radius to circle
+				.attr("fill", "lightblue")
+				.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
+				.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
+
+			// Add the X Axis
+			svgV_I.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add the Y Axis
+			svgV_I.append("g")
+				.call(d3.axisLeft(y));
+		});
+ 
+ 		// Second
+		d3.csv("data/anscombe_II.csv", function(error, dataII) {
+			if (error) throw error;
+			console.log("Dataset anscombe_II.csv loaded");
+			console.log(dataII);
+			dataII.forEach(function(d) {
+				d.x = parseInt(d.x);
+			});
+
+			var w = 400; // Width of our visualization
+			var h = 400; // Height of our visualization
+			var xOffset = 40; // Space for x-axis labels
+			var yOffset = 100; // Space for y-axis labels
+			var margin = 10; // Margin around visualization
+			var vals = ['x', 'y']; // List of data attributes
+			var xVal = vals[0]; // Value to plot on x-axis
+			var yVal = vals[1]; // Value to plot on y-axis
+
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 50};
+			var width = 200;
+			var height = 200;
+
+			// set the ranges
+			var x = d3.scaleLinear().range([0, width])
+					.domain([d3.min(dataII, function(d) {return d.x;}), 
+							d3.max(dataII, function(d) {return d.x;}) + 1]);
+			var y = d3.scaleLinear().range([height, 0])
+					.domain([0, d3.max(dataII, function(d) {return d.y;})]);
+
+			var svgV_II = d3.select("div[id='scatI']")
+						.append("svg")
+							.attr("id", "svgV_II")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+			svgV_II.selectAll("circle")
+				.data(dataII)
+				.enter()
+				.append("circle")
+				.attr("r", 5) // adds radius to circle
+				.attr("fill", "lightblue")
+				.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
+				.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
+
+			// Add the X Axis
+			svgV_II.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add the Y Axis
+			svgV_II.append("g")
+				.call(d3.axisLeft(y));
+		});
+ 
+ 		// Third
+		d3.csv("data/anscombe_III.csv", function(error, dataII) {
+			if (error) throw error;
+			console.log("Dataset anscombe_III.csv loaded");
+			console.log(dataII);
+			dataII.forEach(function(d) {
+				d.x = parseInt(d.x);
+			});
+
+			var w = 400; // Width of our visualization
+			var h = 400; // Height of our visualization
+			var xOffset = 40; // Space for x-axis labels
+			var yOffset = 100; // Space for y-axis labels
+			var margin = 10; // Margin around visualization
+			var vals = ['x', 'y']; // List of data attributes
+			var xVal = vals[0]; // Value to plot on x-axis
+			var yVal = vals[1]; // Value to plot on y-axis
+
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 50};
+			var width = 200;
+			var height = 200;
+
+			// set the ranges
+			var x = d3.scaleLinear().range([0, width])
+					.domain([d3.min(dataII, function(d) {return d.x;}), 
+							d3.max(dataII, function(d) {return d.x;}) + 1]);
+			var y = d3.scaleLinear().range([height, 0])
+					.domain([0, 1 + d3.max(dataII, function(d) {return d.y;})]);
+
+			var svgV_III = d3.select("div[id='scatI']")
+						.append("svg")
+							.attr("id", "svgV_III")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			svgV_III.selectAll("circle")
+				.data(dataII)
+				.enter()
+				.append("circle")
+				.attr("r", 5) // adds radius to circle
+				.attr("fill", "lightblue")
+				.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
+				.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
+
+			// Add the X Axis
+			svgV_III.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add the Y Axis
+			svgV_III.append("g")
+				.call(d3.axisLeft(y));
+		});
+ 
+ 		// Fourth plot
+		d3.csv("data/anscombe_IV.csv", function(error, dataII) {
+			if (error) throw error;
+			console.log("Dataset anscombe_II.csv loaded");
+			console.log(dataII);
+			dataII.forEach(function(d) {
+				d.x = parseInt(d.x);
+			});
+
+			var w = 400; // Width of our visualization
+			var h = 400; // Height of our visualization
+			var xOffset = 40; // Space for x-axis labels
+			var yOffset = 100; // Space for y-axis labels
+			var margin = 10; // Margin around visualization
+			var vals = ['x', 'y']; // List of data attributes
+			var xVal = vals[0]; // Value to plot on x-axis
+			var yVal = vals[1]; // Value to plot on y-axis
+
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 50};
+			var width = 960 - margin.left - margin.right;
+			var height = 500 - margin.top - margin.bottom;
+			var width = 200;
+			var height = 200;
+
+			// set the ranges
+			var x = d3.scaleLinear().range([0, width])
+					.domain([d3.min(dataII, function(d) {return d.x;}) - 1, 
+							d3.max(dataII, function(d) {return d.x;}) + 10]);
+			var y = d3.scaleLinear().range([height, 0])
+					.domain([0, 1 + d3.max(dataII, function(d) {return d.y;})]);
+
+			var svgV_IV = d3.select("div[id='scatI']")
+						.append("svg")
+							.attr("id", "svgV_IV")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			svgV_IV.selectAll("circle")
+				.data(dataII)
+				.enter()
+				.append("circle")
+				.attr("r", 5) // adds radius to circle
+				.attr("fill", "lightblue")
+				.attr("cx", function(d) {return x(d[xVal]);}) // adds x position to circles
+				.attr("cy", function(d) {return y(d[yVal]);}) // adds y position to circles
+
+			// Add the X Axis
+			svgV_IV.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add the Y Axis
+			svgV_IV.append("g")
+				.call(d3.axisLeft(y));
+		});
         
     </script>
 </body>
