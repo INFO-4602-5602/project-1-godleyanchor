@@ -19,3 +19,6 @@ Whistle: Replication:
 	in a scatterplot as a dimension rather than a sum. Tableau is no the most intuitive interface,
 	but as predominately a C and Python programmer, I'm not the biggest fan of d3 and javascript so
 	these were actually easier to make as opposed to similar images made in Python.
+
+Whistle: Coordinated Views:
+	I created the bar graphs for both the X and Y datapoints and added the mouseover event.
