@@ -41,6 +41,10 @@
 			<div id="scatIV"></div>
         </div>
 	</div>
+
+	<div id="XandY">
+		<h1>Xs and Ys: </h1>
+	</div>
     
     <script type="text/javascript">
         // Put your part one code here ***********************
@@ -509,6 +513,108 @@
 
 			// Add the Y Axis
 			svgV_IV.append("g")
+				.call(d3.axisLeft(y));
+		});
+
+		// Extra credit code here ***********************
+		d3.csv("data/anscombe_II.csv", function(error, dataII) {
+			if (error) throw error;
+			console.log("Dataset anscombe_II.csv loaded");
+			console.log(dataII);
+			dataII.forEach(function(d) {
+				d.x = parseInt(d.x);
+			});
+
+			var w = 700; // Width of our visualization
+			var h = 500; // Height of our visualization
+			var xOffset = 40; // Space for x-axis labels
+			var yOffset = 100; // Space for y-axis labels
+			var margin = 10; // Margin around visualization
+			var vals = ['x', 'y']; // List of data attributes
+			var xVal = vals[0]; // Value to plot on x-axis
+			var yVal = vals[1]; // Value to plot on y-axis
+
+			// set the dimensions and margins of the graph
+			var margin = {top: 20, right: 20, bottom: 30, left: 50};
+			var width = 960 - margin.left - margin.right;
+			var height = 500 - margin.top - margin.bottom;
+
+			// set the ranges
+			var x = d3.scaleLinear().range([0, width])
+					.domain([d3.min(dataII, function(d) {return d.x;}), 
+							d3.max(dataII, function(d) {return d.x;}) + 1]);
+			var y = d3.scaleLinear().range([height, 0])
+					.domain([0, 1+ d3.max(dataII, function(d) {return d.y;})]);
+
+			var svgII = d3.select("div[id='XandY']")
+						.append("svg")
+							.attr("id", "svgII")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			var svgI = d3.select("div[id='XandY']")
+						.append("svg")
+							.attr("id", "svgII")
+							.attr("width", width + margin.left + margin.right)
+							.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			function mouseOn(d, i) {
+				d3.select(this)
+					.style("fill", "orange")
+			}
+
+			// Ys
+			svgII.selectAll("bar")
+				.data(dataII)
+				.enter().append("rect")
+					.attr("class", "bar")
+					.attr("id", "barY")
+					.attr("x", function(d) { return x(d.x); })
+					.attr("width", 50)
+					.attr("fill", "lightblue")
+					.attr("y", function(d) { return y(d.y); })
+					.attr("height", function(d) { return height - y(d.y); })
+				.on("mouseover", function(d) { 
+					d3.select(this)
+						.style("fill", "orange")
+				})
+				.on("mouseout", function(d, i) { 
+					d3.select(this)
+						.style("fill", "lightblue")
+				});
+			svgII.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+			svgII.append("g")
+				.call(d3.axisLeft(y));
+
+			// Xs
+			svgI.selectAll("bar")
+				.data(dataII)
+				.enter().append("rect")
+					.attr("class", "bar")
+					.attr("id", "barX")
+					.attr("x", function(d) { return x(d.x); })
+					.attr("width", 50)
+					.attr("fill", "lightblue")
+					.attr("y", function(d) { return y(d.x); })
+					.attr("height", function(d) { return height - y(d.x); })
+				.on("mouseover", function(d) { 
+					d3.select(this)
+						.style("fill", "orange")
+				})
+				.on("mouseout", function(d) { 
+					d3.select(this)
+						.style("fill", "lightblue")
+				});
+			svgI.append("g")
+				.attr("transform", "translate(0, " + height + ")")
+				.call(d3.axisBottom(x));
+			svgI.append("g")
 				.call(d3.axisLeft(y));
 		});
         
